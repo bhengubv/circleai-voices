@@ -30,6 +30,7 @@ is removed, the redistribution stops being compliant.**
 |---|---|---|---|
 | `ne_NP-google-medium.onnx` | Nepali | [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices) — trained on [OpenSLR 43](http://www.openslr.org/43/), 18 speakers | CC-BY-SA-4.0 |
 | `ko_KR-kss-medium.onnx` | Korean | [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices) — trained on the [Korean Single Speaker corpus](https://www.kaggle.com/datasets/bryanpark/korean-single-speaker-speech-dataset) | CC-BY-NC-SA-4.0 |
+| `af_ZA-google-nwu-low.onnx` | Afrikaans | [MycroftAI/mimic3-voices](https://github.com/MycroftAI/mimic3-voices/tree/master/voices/af_ZA/google-nwu_low) — trained on [OpenSLR 32](http://www.openslr.org/32/), the Google/North-West University South African corpus; ONNX conversion from sherpa-onnx | CC-BY-SA-4.0 |
 | `ig_IB-soro-medium.onnx` | Igbo | [Shinzmann/soro-tts-ibo](https://huggingface.co/Shinzmann/soro-tts-ibo) — trained on [WaxalNLP](https://huggingface.co/datasets/google/WaxalNLP), re-exported to ONNX by us | CC-BY-NC-4.0 |
 
 Each `.onnx` ships with its `.onnx.json` sidecar, which carries the phoneme map,
@@ -69,3 +70,19 @@ is broken rather than the pipeline: given "ndewo enyi m kedu ka i mere taa" it
 produced fluent, well-formed Igbo with no relationship to the input, in 8 seconds
 for six words. Wrong words spoken confidently are worse than no voice, so it is
 gone.
+
+### On the Afrikaans voice
+
+It replaces an eleven-language South African model that measured **at its own
+noise floor** for Afrikaans — cer 0.76 against a 0.76 floor, unmoved by every
+encoding, language id and recogniser tried. That is not a weak voice, it is
+noise wearing a language label.
+
+The replacement measures **CER 0.48 against a 1.17 floor**. `Goeie môre` comes
+back as "Goeiemor", `Die son skyn vandag mooi` as "Disone schijn van dach moui".
+It is phoneme-driven and needs espeak with the `af` voice; its sidecar here is
+generated from the bundle's own `tokens.txt`, because Mimic3 ships a training
+config rather than a Piper sidecar.
+
+The eleven-language model keeps its other ten languages and simply no longer
+claims `af`.
