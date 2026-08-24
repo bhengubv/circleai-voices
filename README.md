@@ -32,6 +32,8 @@ is removed, the redistribution stops being compliant.**
 | `ko_KR-kss-medium.onnx` | Korean | [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices) — trained on the [Korean Single Speaker corpus](https://www.kaggle.com/datasets/bryanpark/korean-single-speaker-speech-dataset) | CC-BY-NC-SA-4.0 |
 | `af_ZA-google-nwu-low.onnx` | Afrikaans | [MycroftAI/mimic3-voices](https://github.com/MycroftAI/mimic3-voices/tree/master/voices/af_ZA/google-nwu_low) — trained on [OpenSLR 32](http://www.openslr.org/32/), the Google/North-West University South African corpus; ONNX conversion from sherpa-onnx | CC-BY-SA-4.0 |
 | `ig_IB-soro-medium.onnx` | Igbo | [Shinzmann/soro-tts-ibo](https://huggingface.co/Shinzmann/soro-tts-ibo) — trained on [WaxalNLP](https://huggingface.co/datasets/google/WaxalNLP), re-exported to ONNX by us | CC-BY-NC-4.0 |
+| `jsut_vits_prosody.onnx` | Japanese | [espnet/kan-bayashi_jsut_vits_prosody](https://huggingface.co/espnet/kan-bayashi_jsut_vits_prosody) — trained on the [JSUT corpus](https://sites.google.com/site/shinnosuketakamichi/publication/jsut) (University of Tokyo), re-exported to ONNX by us | CC-BY-4.0 |
+| `sys.dic`, `matrix.bin`, `char.bin`, `unk.dic`, `*-id.def`, `rewrite.def` | Japanese (phonemiser) | [Open JTalk](http://open-jtalk.sourceforge.net/) dictionary `open_jtalk_dic_utf_8-1.11`, NAIST — dictionary data only, no engine code | BSD 3-clause (`COPYING`) |
 
 Each `.onnx` ships with its `.onnx.json` sidecar, which carries the phoneme map,
 the sample rate and the inference scales. The sidecar is part of the voice:
@@ -46,13 +48,24 @@ lives in the CircleAI source repository itself.
 ## Layout
 
 Assets hang off a release tag rather than the git tree, because a 77 MB model
-does not belong in a clone. The catalogue addresses them as
-`<tag>/<asset>` and resolves that to:
+does not belong in a clone:
 
     https://github.com/bhengubv/circleai-voices/releases/download/<tag>/<asset>
 
 Every file is pinned by SHA-256 in CircleAI's model registry and verified after
 download, so a replaced or corrupted asset fails loudly instead of being spoken.
+
+**Release assets are flat, and the tag is not a directory.** The catalogue keeps
+the tag on the repository — `bhengubv/circleai-voices@voices-v1` — and uses the
+bundle file name for the path the file unpacks to locally. Those are two
+different things, and collapsing them broke Japanese silently: naming the
+dictionary `voices-v1/sys.dic` builds a correct URL, downloads 103 MB, verifies
+its SHA, and lands it in a folder the phonemiser does not look in. Nothing
+errors; Japanese just has no phonemiser. Only the last segment of a bundle name
+is the asset here.
+
+The nine Japanese dictionary files keep their exact upstream names because Open
+JTalk opens them by name from a folder it is handed, not from a list.
 
 ### On the Igbo voice
 
@@ -86,3 +99,24 @@ config rather than a Piper sidecar.
 
 The eleven-language model keeps its other ten languages and simply no longer
 claims `af`.
+
+### On the Japanese voice
+
+It is the one voice here that is neither grapheme-driven nor espeak-driven, and
+that is why the dictionary ships beside it. Japanese is written without spaces
+and its pitch accent is not recoverable from the characters, so the text goes
+through Open JTalk to full-context labels, and the accent fields in those labels
+become the bracket tokens the model was trained on. Strip the brackets and it
+still speaks — confidently, with flat and wrong prosody, which a recogniser will
+happily transcribe as correct.
+
+Scoring it needs care for a reason that has nothing to do with the voice.
+Japanese has no single correct spelling of a spoken sentence. Reading back
+`これはテスト文です`, the recogniser wrote `これは手スト分です` — /te/ as 手
+rather than テ, /bun/ as 分 rather than 文. Same sounds, same word, two
+characters different, and a character error rate of 0.22 for a perfect reading.
+Compared as phonemes instead it is **0.00**, and 0.01–0.12 on longer sentences,
+with no unknown tokens.
+
+Both files were built and measured months before they were published; what is in
+this release is byte-identical to what was measured.
