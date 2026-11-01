@@ -34,6 +34,7 @@ is removed, the redistribution stops being compliant.**
 | `ig_IB-soro-medium.onnx` | Igbo | [Shinzmann/soro-tts-ibo](https://huggingface.co/Shinzmann/soro-tts-ibo) — trained on [WaxalNLP](https://huggingface.co/datasets/google/WaxalNLP), re-exported to ONNX by us | CC-BY-NC-4.0 |
 | `jsut_vits_prosody.onnx` | Japanese | [espnet/kan-bayashi_jsut_vits_prosody](https://huggingface.co/espnet/kan-bayashi_jsut_vits_prosody) — trained on the [JSUT corpus](https://sites.google.com/site/shinnosuketakamichi/publication/jsut) (University of Tokyo), re-exported to ONNX by us | CC-BY-4.0 |
 | `sys.dic`, `matrix.bin`, `char.bin`, `unk.dic`, `*-id.def`, `rewrite.def` | Japanese (phonemiser) | [Open JTalk](http://open-jtalk.sourceforge.net/) dictionary `open_jtalk_dic_utf_8-1.11`, NAIST — dictionary data only, no engine code | BSD 3-clause (`COPYING`) |
+| `model_quantized.onnx`, `tokenizer.json`, `if_sara.bin` (release `kokoro-82m-v1.0`) | Italian | [hexgrad/Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M), built on StyleTTS 2 — ONNX conversion from [onnx-community/Kokoro-82M-v1.0-ONNX](https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX); `tokenizer.json` is its IPA vocabulary and `if_sara.bin` its voice pack | Apache-2.0 |
 
 Each `.onnx` ships with its `.onnx.json` sidecar, which carries the phoneme map,
 the sample rate and the inference scales. The sidecar is part of the voice:
